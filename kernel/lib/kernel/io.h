@@ -7,29 +7,28 @@
 	 QImode
 	     “Quarter-Integer”模式，表示一个一字节的整数。 
 *******************************************/ 
+
 #ifndef __LIB_IO_H
 #define __LIB_IO_H
 #include "stdint.h"
 
-/* 内联汇编实现对端口的操作 */
-
-/* 向端口port写入一个字节 */
-static inline void outb(uint16_t port, uint8_t data){
+/* 向端口port写入一个字节*/
+static inline void outb(uint16_t port, uint8_t data) {
 /*********************************************************
  a表示用寄存器al或ax或eax,对端口指定N表示0~255, d表示用dx存储端口号, 
  %b0表示对应al,%w1表示对应dx */ 
- asm volatile ( "outb %b0, %w1" : : "a" (data), "Nd" (port));
-/*********************************************************/
+   asm volatile ( "outb %b0, %w1" : : "a" (data), "Nd" (port));    
+/******************************************************/
 }
 
 /* 将addr处起始的word_cnt个字写入端口port */
-static inline void outsw(uint16_t port, const void* addr, uint32_t word_cnt){
+static inline void outsw(uint16_t port, const void* addr, uint32_t word_cnt) {
 /*********************************************************
    +表示此限制即做输入又做输出.
    outsw是把ds:esi处的16位的内容写入port端口, 我们在设置段描述符时, 
    已经将ds,es,ss段的选择子都设置为相同的值了,此时不用担心数据错乱。*/
    asm volatile ("cld; rep outsw" : "+S" (addr), "+c" (word_cnt) : "d" (port));
-/******************************************************/	
+/******************************************************/
 }
 
 /* 将从端口port读入的一个字节返回 */
